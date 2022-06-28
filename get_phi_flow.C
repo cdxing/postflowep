@@ -53,6 +53,19 @@ Double_t BreitWigner(Double_t *x_val, Double_t *par)
     return BW;
 }
 
+Double_t flow_1(Double_t *x_val, Double_t *par)
+{
+    Double_t x, y;
+    Double_t Ampl, v1;
+    x = x_val[0];
+    Ampl = par[0];
+    v1 = par[1];
+
+    y = Ampl*(1.0 + 2.0*v1*TMath::Cos(1.0*x));
+
+    return y;
+}
+
 Double_t flow_2(Double_t *x_val, Double_t *par)
 {
     Double_t x, y;
@@ -144,6 +157,7 @@ void defineStyle()
 }
 static const TString Energy[4] = {"200GeV","20GeV","15GeV","19GeV",};
 static const Int_t pt_total_phi = 23;
+static const Int_t ycm_total_phi = 16;
 static const Int_t Centrality_total = 4;
 static const Int_t Centrality_start = 0;
 static const Int_t Centrality_stop = 4;
@@ -153,7 +167,8 @@ static const Int_t EtaGap_start = 0;
 static const Int_t EtaGap_stop = 1;
 static const Int_t Phi_Psi_total = 7;
 static const Float_t nSigmaPhi = 5;
-static const Double_t PI_max[2] = {TMath::Pi()/2.0,TMath::Pi()/3.0};
+//static const Double_t PI_max[2] = {TMath::Pi()/2.0,TMath::Pi()/3.0};
+static const Double_t PI_max[3] = {TMath::Pi()/1.0,TMath::Pi()/2.0,TMath::Pi()/3.0};
 static const Int_t cent_low[4] = {0,7,4,0}; // 0 = 0-80%, 1 = 0-30%, 2 = 30-80%
 static const Int_t cent_up[4]  = {8,8,6,3}; // 0 = 0-80%, 1 = 0-30%, 2 = 30-80%
 //static const Int_t cent_low[4] = {1,1,3,6}; // 0 = 0-80%, 1 = 0-10%, 2 = 10-40%, 3 = 40-80%
@@ -166,6 +181,16 @@ static const Float_t BW_Stop  = 1.050;
 //static Float_t pt_up_phi[pt_total_New_phi]  =     {0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0,2.4,2.8,3.4};
 //static Int_t pt_new_bin_start[pt_total_New_phi] = {1  ,2  ,3  ,4  ,5  ,6  ,7  ,8  ,9  ,11 ,13};
 //static Int_t pt_new_bin_stop[pt_total_New_phi]  = {1  ,2  ,3  ,4  ,5  ,6  ,7  ,8  ,10 ,12 ,14};
+static const Int_t ycm_total_New_phi = 10;
+static Float_t ycm_low_phi[ycm_total_New_phi] =    {-1.0,-0.8,-0.6,-0.4,-0.2,0.0,0.2,0.4,0.6,0.8};
+static Float_t ycm_up_phi[ycm_total_New_phi]  =    {-0.8,-0.6,-0.4,-0.2, 0.0,0.2,0.4,0.6,0.8,1.0};
+static Int_t ycm_new_bin_start[ycm_total_New_phi] = {3,   4,   5,   6,    7,  8,  9,  10, 11, 12};
+static Int_t ycm_new_bin_stop[ycm_total_New_phi]  = {3,   4,   5,   6,    7,  8,  9,  10, 11, 12};
+//static const Int_t ycm_total_New_phi = 16;
+//static Float_t ycm_low_phi[ycm_total_New_phi] =    {-1.6,-1.4,-1.2,-1.0,-0.8,-0.6,-0.4,-0.2,0.0,0.2,0.4,0.6,0.8,1.0,1.2,1.4};
+//static Float_t ycm_up_phi[ycm_total_New_phi]  =    {-1.4,-1.2,-1.0,-0.8,-0.6,-0.4,-0.2, 0.0,0.2,0.4,0.6,0.8,1.0,1.2,1.4,1.6};
+//static Int_t ycm_new_bin_start[ycm_total_New_phi] = {0,   1,   2,   3,   4,   5,   6,    7,  8,  9,  10, 11, 12, 13, 14, 15};
+//static Int_t ycm_new_bin_stop[ycm_total_New_phi]  = {0,   1,   2,   3,   4,   5,   6,    7,  8,  9,  10, 11, 12 ,13, 14, 15};
 
 static const Int_t pt_total_New_phi = 8;
 static Float_t pt_low_phi[pt_total_New_phi] =     {0.4,0.8,1.0,1.2,1.4,1.6,2.0,2.4};
@@ -200,15 +225,15 @@ void get_phi_flow(const Int_t energy = 3)
 
     // read histogram for same event and mixed event
     // TH1F *h_mMass_Phi2_SE[pt_total_phi][Centrality_total][Phi_Psi_total];
-    TH1F *h_mMass_Phi2_SE[pt_total_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
-  // TH1F *h_mMass_Phi3_SE[pt_total_phi][Centrality_total][Phi_Psi_total];
+    TH1F *h_mMass_Phi2_SE[ycm_total_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
+  // TH1F *h_mMass_Phi3_SE[ycm_total_phi][Centrality_total][Phi_Psi_total];
 
-    TH1F *h_mMass_Phi2_ME[pt_total_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
-    // TH1F *h_mMass_Phi3_ME[pt_total_phi][Centrality_total][Phi_Psi_total];
+    TH1F *h_mMass_Phi2_ME[ycm_total_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
+    // TH1F *h_mMass_Phi3_ME[ycm_total_phi][Centrality_total][Phi_Psi_total];
     cout << "test 0 successfully! " <<  endl;
     std::ofstream txtFile("./flow/postflowep.txt",ofstream::out);
 
-    for(Int_t i = 0; i < pt_total_phi; i++) // pt bin
+    for(Int_t i = 0; i < ycm_total_phi; i++) // pt bin
     {
         for(Int_t j = Centrality_start; j < Centrality_stop; j++) // centrality bin
         {
@@ -219,21 +244,21 @@ void get_phi_flow(const Int_t energy = 3)
                 {
                   //TString Mode[2] = {"SE","ME"};
                   TString HistName;
-                  //HistName = Form("pt_%d_Centrality_%d_phi_Psi_%d_2nd_%s_%s",i,j,m,"Phi",Mode[X_flag].Data());
+                  //HistName = Form("ycm_%d_Centrality_%d_phi_Psi_%d_2nd_%s_%s",i,j,m,"Phi",Mode[X_flag].Data());
                   //h_mMass_Phi2_Ana[i][j][X_flag][m] = (TH1F*)File_Ana->Get(HistName.Data())->Clone();
 
-                  //HistName = Form("pt_%d_Centrality_%d_phi_Psi_%d_2nd_Phi_SE",i,j,m);
-                  HistName = Form("pt_%d_Centrality_%d_EtaGap_%d_phi_Psi_%d_2nd_Phi_SE",i,j,l,m);
+                  //HistName = Form("ycm_%d_Centrality_%d_phi_Psi_%d_2nd_Phi_SE",i,j,m);
+                  HistName = Form("ycm_%d_Centrality_%d_EtaGap_%d_phi_Psi_%d_1st_Phi_SE",i,j,l,m);
                   h_mMass_Phi2_SE[i][j][l][m] = (TH1F*)File_Ana_SE->Get(HistName.Data())->Clone();
-                  //HistName = Form("pt_%d_Centrality_%d_phi_Psi_%d_3rd_Phi_SE",i,j,m);
-                  //HistName = Form("pt_%d_Centrality_%d_EtaGap_%d_phi_Psi_%d_3rd_Phi_SE",i,j,l,m);
+                  //HistName = Form("ycm_%d_Centrality_%d_phi_Psi_%d_3rd_Phi_SE",i,j,m);
+                  //HistName = Form("ycm_%d_Centrality_%d_EtaGap_%d_phi_Psi_%d_3rd_Phi_SE",i,j,l,m);
                   //h_mMass_Phi3_SE[i][j][l][m] = (TH1F*)File_Ana_SE->Get(HistName.Data())->Clone();
 
-                  //HistName = Form("pt_%d_Centrality_%d_phi_Psi_%d_2nd_Phi_ME",i,j,m);
-                  HistName = Form("pt_%d_Centrality_%d_EtaGap_%d_phi_Psi_%d_2nd_Phi_ME",i,j,l,m);
+                  //HistName = Form("ycm_%d_Centrality_%d_phi_Psi_%d_2nd_Phi_ME",i,j,m);
+                  HistName = Form("ycm_%d_Centrality_%d_EtaGap_%d_phi_Psi_%d_1st_Phi_ME",i,j,l,m);
                   h_mMass_Phi2_ME[i][j][l][m] = (TH1F*)File_Ana_ME->Get(HistName.Data())->Clone();
-                  //HistName = Form("pt_%d_Centrality_%d_phi_Psi_%d_3rd_Phi_ME",i,j,m);
-                  //HistName = Form("pt_%d_Centrality_%d_EtaGap_%d_phi_Psi_%d_3rd_Phi_ME",i,j,l,m);
+                  //HistName = Form("ycm_%d_Centrality_%d_phi_Psi_%d_3rd_Phi_ME",i,j,m);
+                  //HistName = Form("ycm_%d_Centrality_%d_EtaGap_%d_phi_Psi_%d_3rd_Phi_ME",i,j,l,m);
                   //h_mMass_Phi3_ME[i][j][l][m] = (TH1F*)File_Ana_ME->Get(HistName.Data())->Clone();
                 }
             }
@@ -241,9 +266,9 @@ void get_phi_flow(const Int_t energy = 3)
     }
 
     // calculate scaling factor and subtract mixed event from same event
-    TH1F *h_mMass_Phi2_SM[pt_total_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
-    // TH1F *h_mMass_Phi3_SM[pt_total_phi][Centrality_total][Phi_Psi_total];
-    for(Int_t i = 0; i < pt_total_phi; i++) // pt bin
+    TH1F *h_mMass_Phi2_SM[ycm_total_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
+    // TH1F *h_mMass_Phi3_SM[ycm_total_phi][Centrality_total][Phi_Psi_total];
+    for(Int_t i = 0; i < ycm_total_phi; i++) // pt bin
     {
         for(Int_t j = Centrality_start; j < Centrality_stop; j++) // centrality bin
         {
@@ -292,15 +317,15 @@ void get_phi_flow(const Int_t energy = 3)
     TH1::SetDefaultSumw2();
 
     // same event and mixed event distribution for QA usage
-    //TH1F *h_mMass_Phi2_Ana_New_Bin[pt_total_New_phi][Centrality_total][Mode_total][Phi_Psi_total];
-    //TH1F *h_mMass_Phi2_SE_New_Bin[pt_total_New_phi][Centrality_total][Phi_Psi_total];
-    //TH1F *h_mMass_Phi2_ME_New_Bin[pt_total_New_phi][Centrality_total][Phi_Psi_total];
-    //TH1F *h_mMass_Phi2_SM_new_bin[pt_total_New_phi][Centrality_total][Phi_Psi_total];
-    TH1F *h_mMass_Phi2_SE_New_Bin[pt_total_New_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
-    TH1F *h_mMass_Phi2_ME_New_Bin[pt_total_New_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
-    TH1F *h_mMass_Phi2_SM_new_bin[pt_total_New_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
-    TH1F *h_mMass_Phi2_SM_New_Bin[pt_total_New_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
-    TCanvas *c1_invmass[pt_total_New_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
+    //TH1F *h_mMass_Phi2_Ana_New_Bin[ycm_total_New_phi][Centrality_total][Mode_total][Phi_Psi_total];
+    //TH1F *h_mMass_Phi2_SE_New_Bin[ycm_total_New_phi][Centrality_total][Phi_Psi_total];
+    //TH1F *h_mMass_Phi2_ME_New_Bin[ycm_total_New_phi][Centrality_total][Phi_Psi_total];
+    //TH1F *h_mMass_Phi2_SM_new_bin[ycm_total_New_phi][Centrality_total][Phi_Psi_total];
+    TH1F *h_mMass_Phi2_SE_New_Bin[ycm_total_New_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
+    TH1F *h_mMass_Phi2_ME_New_Bin[ycm_total_New_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
+    TH1F *h_mMass_Phi2_SM_new_bin[ycm_total_New_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
+    TH1F *h_mMass_Phi2_SM_New_Bin[ycm_total_New_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
+    TCanvas *c1_invmass[ycm_total_New_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
     char name[80];
     for(Int_t j = Centrality_start; j < Centrality_stop; j++) // centrality bin
     {
@@ -308,23 +333,23 @@ void get_phi_flow(const Int_t energy = 3)
         {
             for(Int_t m = 0; m < Phi_Psi_total; m++) // phi-psi bin
             {
-                for(Int_t i = 0; i < pt_total_New_phi; i++)
+                for(Int_t i = 0; i < ycm_total_New_phi; i++)
                 {
-                    for(Int_t pt_bin = pt_new_bin_start[i]; pt_bin <= pt_new_bin_stop[i]; pt_bin++)
+                    for(Int_t ycm_bin = ycm_new_bin_start[i]; ycm_bin <= ycm_new_bin_stop[i]; ycm_bin++)
                     {
-                        if(pt_bin == pt_new_bin_start[i])
+                        if(ycm_bin == ycm_new_bin_start[i])
                         {
-                            //h_mMass_Phi2_Ana_New_Bin[i][j][0][m] = (TH1F*)h_mMass_Phi2_Ana[pt_bin][j][0][m]->Clone();
-                            //h_mMass_Phi2_Ana_New_Bin[i][j][1][m] = (TH1F*)h_mMass_Phi2_Ana[pt_bin][j][1][m]->Clone();
-                            h_mMass_Phi2_SE_New_Bin[i][j][l][m] = (TH1F*)h_mMass_Phi2_SE[pt_bin][j][l][m]->Clone();
-                            h_mMass_Phi2_ME_New_Bin[i][j][l][m] = (TH1F*)h_mMass_Phi2_ME[pt_bin][j][l][m]->Clone();
+                            //h_mMass_Phi2_Ana_New_Bin[i][j][0][m] = (TH1F*)h_mMass_Phi2_Ana[ycm_bin][j][0][m]->Clone();
+                            //h_mMass_Phi2_Ana_New_Bin[i][j][1][m] = (TH1F*)h_mMass_Phi2_Ana[ycm_bin][j][1][m]->Clone();
+                            h_mMass_Phi2_SE_New_Bin[i][j][l][m] = (TH1F*)h_mMass_Phi2_SE[ycm_bin][j][l][m]->Clone();
+                            h_mMass_Phi2_ME_New_Bin[i][j][l][m] = (TH1F*)h_mMass_Phi2_ME[ycm_bin][j][l][m]->Clone();
                         }
                         else
                         {
-                            //h_mMass_Phi2_Ana_New_Bin[i][j][0][m]->Add(h_mMass_Phi2_Ana[pt_bin][j][0][m],1.0);
-                            //h_mMass_Phi2_Ana_New_Bin[i][j][1][m]->Add(h_mMass_Phi2_Ana[pt_bin][j][1][m],1.0);
-                            h_mMass_Phi2_SE_New_Bin[i][j][l][m]->Add(h_mMass_Phi2_SE[pt_bin][j][l][m],1.0);
-                            h_mMass_Phi2_ME_New_Bin[i][j][l][m]->Add(h_mMass_Phi2_ME[pt_bin][j][l][m],1.0);
+                            //h_mMass_Phi2_Ana_New_Bin[i][j][0][m]->Add(h_mMass_Phi2_Ana[ycm_bin][j][0][m],1.0);
+                            //h_mMass_Phi2_Ana_New_Bin[i][j][1][m]->Add(h_mMass_Phi2_Ana[ycm_bin][j][1][m],1.0);
+                            h_mMass_Phi2_SE_New_Bin[i][j][l][m]->Add(h_mMass_Phi2_SE[ycm_bin][j][l][m],1.0);
+                            h_mMass_Phi2_ME_New_Bin[i][j][l][m]->Add(h_mMass_Phi2_ME[ycm_bin][j][l][m],1.0);
                         }
                     }
                     //h_mMass_Phi2_SM_new_bin[i][j][m] = (TH1F*)h_mMass_Phi2_Ana_New_Bin[i][j][0][m]->Clone();
@@ -350,7 +375,7 @@ void get_phi_flow(const Int_t energy = 3)
                     h_mMass_Phi2_SM_new_bin[i][j][l][m]->Add(h_mMass_Phi2_SE_New_Bin[i][j][l][m],-1.0);
                     h_mMass_Phi2_SM_New_Bin[i][j][l][m]->Add(h_mMass_Phi2_ME_New_Bin[i][j][l][m],-1.0);
 
-                    sprintf(name, "c1_invmass_Pt%d_Cent%d_phi_Psi%d",i,j,m);
+                    sprintf(name, "c1_invmass_Ycm%d_Cent%d_phi_Psi%d",i,j,m);
                     c1_invmass[i][j][l][m] = new TCanvas(name, name, 600, 500);
                     c1_invmass[i][j][l][m]->cd();
                     gPad->SetTopMargin(0.1);
@@ -392,7 +417,7 @@ void get_phi_flow(const Int_t energy = 3)
                     h_mMass_Phi2_SM_New_Bin[i][j][l][m]->Draw("HIST SAME");
                     //h_mMass_Phi2_SM_new_bin[i][j][l][m]->SetFillStyle(3003);
                     //h_mMass_Phi2_SM_new_bin[i][j][l][m]->Draw("HIST SAME");
-                    sprintf(name, "figures_phi/invmass_Pt%d_Cent%d_phi_Psi%d.pdf",i,j,m);
+                    sprintf(name, "figures_phi/invmass_Ycm%d_Cent%d_phi_Psi%d.pdf",i,j,m);
                     c1_invmass[i][j][l][m]->SaveAs(name);
                 }
             }
@@ -403,8 +428,8 @@ void get_phi_flow(const Int_t energy = 3)
 
 
     // merged original pT bins to get new pT bins
-    //TH1F *h_mMass_Phi2_SM_New_Bin[pt_total_New_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
-    //TH1F *h_mMass_Phi3_SM_New_Bin[pt_total_New_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
+    //TH1F *h_mMass_Phi2_SM_New_Bin[ycm_total_New_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
+    //TH1F *h_mMass_Phi3_SM_New_Bin[ycm_total_New_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
 
     for(Int_t j = Centrality_start; j < Centrality_stop; j++) // centrality bin
     {
@@ -412,22 +437,22 @@ void get_phi_flow(const Int_t energy = 3)
         {
             for(Int_t m = 0; m < Phi_Psi_total; m++) // phi-psi bin
             {
-                for(Int_t i = 0; i < pt_total_New_phi; i++)
+                for(Int_t i = 0; i < ycm_total_New_phi; i++)
                 {
-                    for(Int_t pt_bin = pt_new_bin_start[i]; pt_bin <= pt_new_bin_stop[i]; pt_bin++)
+                    for(Int_t ycm_bin = ycm_new_bin_start[i]; ycm_bin <= ycm_new_bin_stop[i]; ycm_bin++)
                     {
-                        if(pt_bin == pt_new_bin_start[i])
+                        if(ycm_bin == ycm_new_bin_start[i])
                         {
-                            h_mMass_Phi2_SM_New_Bin[i][j][l][m] = (TH1F*)h_mMass_Phi2_SM[pt_bin][j][l][m]->Clone();
-                            //h_mMass_Phi2_SM_new_bin[i][j][l][m] = (TH1F*)h_mMass_Phi2_SM[pt_bin][j][l][m]->Clone();
-                            //h_mMass_Phi2_SM_new_bin[i][j][m] = (TH1F*)h_mMass_Phi2_SM[pt_bin][j][m]->Clone();
-                            // h_mMass_Phi3_SM_New_Bin[i][j][m] = (TH1F*)h_mMass_Phi3_SM[pt_bin][j][m]->Clone();
+                            h_mMass_Phi2_SM_New_Bin[i][j][l][m] = (TH1F*)h_mMass_Phi2_SM[ycm_bin][j][l][m]->Clone();
+                            //h_mMass_Phi2_SM_new_bin[i][j][l][m] = (TH1F*)h_mMass_Phi2_SM[ycm_bin][j][l][m]->Clone();
+                            //h_mMass_Phi2_SM_new_bin[i][j][m] = (TH1F*)h_mMass_Phi2_SM[ycm_bin][j][m]->Clone();
+                            // h_mMass_Phi3_SM_New_Bin[i][j][m] = (TH1F*)h_mMass_Phi3_SM[ycm_bin][j][m]->Clone();
                         }
                         else
                         {
-                            h_mMass_Phi2_SM_New_Bin[i][j][l][m]->Add(h_mMass_Phi2_SM[pt_bin][j][l][m],1.0);
-                            //h_mMass_Phi2_SM_new_bin[i][j][l][m]->Add(h_mMass_Phi2_SM[pt_bin][j][l][m],1.0);
-                            // h_mMass_Phi3_SM_New_Bin[i][j][m]->Add(h_mMass_Phi3_SM[pt_bin][j][m],1.0);
+                            h_mMass_Phi2_SM_New_Bin[i][j][l][m]->Add(h_mMass_Phi2_SM[ycm_bin][j][l][m],1.0);
+                            //h_mMass_Phi2_SM_new_bin[i][j][l][m]->Add(h_mMass_Phi2_SM[ycm_bin][j][l][m],1.0);
+                            // h_mMass_Phi3_SM_New_Bin[i][j][m]->Add(h_mMass_Phi3_SM[ycm_bin][j][m],1.0);
                         }
                     }
                     //if(i >= 6)
@@ -443,16 +468,16 @@ void get_phi_flow(const Int_t energy = 3)
     cout << "test 3 ! " <<  endl;
 
     // Poly+BW Fit for merged phi-psi bin
-    TH1F *h_mMass_Phi2_SM_total[pt_total_New_phi][Centrality_total];
-    // TH1F *h_mMass_Phi3_SM_total[pt_total_New_phi][Centrality_total];
+    TH1F *h_mMass_Phi2_SM_total[ycm_total_New_phi][Centrality_total];
+    // TH1F *h_mMass_Phi3_SM_total[ycm_total_New_phi][Centrality_total];
 
-    TF1  *f_PolyBW_Phi2_total[pt_total_New_phi][Centrality_total];
-    // TF1  *f_PolyBW_Phi3_total[pt_total_New_phi][Centrality_total];
+    TF1  *f_PolyBW_Phi2_total[ycm_total_New_phi][Centrality_total];
+    // TF1  *f_PolyBW_Phi3_total[ycm_total_New_phi][Centrality_total];
 
-    Float_t ParFit2_total[pt_total_New_phi][Centrality_total][5];
-    // Float_t ParFit3_total[pt_total_New_phi][Centrality_total][5];
+    Float_t ParFit2_total[ycm_total_New_phi][Centrality_total][5];
+    // Float_t ParFit3_total[ycm_total_New_phi][Centrality_total][5];
 
-    for(Int_t i = 0; i < pt_total_New_phi; i++) // pt bin
+    for(Int_t i = 0; i < ycm_total_New_phi; i++) // pt bin
     {
         for(Int_t j = Centrality_start; j < Centrality_stop; j++) // centrality bin
         {
@@ -463,7 +488,7 @@ void get_phi_flow(const Int_t energy = 3)
                     TString HistName;
                     if(m == 0)
                     {
-                        HistName = Form("pt_%d_Centrality_%d_Total_2nd_Phi_SE",i,j);
+                        HistName = Form("ycm_%d_Centrality_%d_Total_1st_Phi_SE",i,j);
                         h_mMass_Phi2_SM_total[i][j] = (TH1F*)h_mMass_Phi2_SM_New_Bin[i][j][l][m]->Clone(HistName.Data());
                         //h_mMass_Phi2_SM_total[i][j] = (TH1F*)h_mMass_Phi2_SM_new_bin[i][j][l][m]->Clone(HistName.Data());
                         HistName = "f_"+HistName;
@@ -481,7 +506,7 @@ void get_phi_flow(const Int_t energy = 3)
                         f_PolyBW_Phi2_total[i][j]->SetRange(BW_Start,BW_Stop);
 
                         /*
-                        HistName = Form("pt_%d_Centrality_%d_Total_3rd_Phi_SE",i,j);
+                        HistName = Form("ycm_%d_Centrality_%d_Total_3rd_Phi_SE",i,j);
                         // h_mMass_Phi3_SM_total[i][j] = (TH1F*)h_mMass_Phi3_SM_New_Bin[i][j][m]->Clone(HistName.Data());
                         HistName = "f_"+HistName;
                         f_PolyBW_Phi3_total[i][j] = new TF1(HistName.Data(),PolyBreitWigner,BW_Start,BW_Stop,5);
@@ -521,8 +546,8 @@ void get_phi_flow(const Int_t energy = 3)
     // Draw the merged histogram and fit line
     TCanvas *c_mMass_Phi2_SM_total[Centrality_total];
     //TCanvas *c_mMass_Phi3_SM_total[Centrality_total];
-    TF1 *f_Poly_Phi2_total[pt_total_New_phi][Centrality_total];
-    //TF1 *f_Poly_Phi3_total[pt_total_New_phi][Centrality_total];
+    TF1 *f_Poly_Phi2_total[ycm_total_New_phi][Centrality_total];
+    //TF1 *f_Poly_Phi3_total[ycm_total_New_phi][Centrality_total];
     for(Int_t j = Centrality_start; j < Centrality_stop; j++) // centrality bin
     {
         for(Int_t l = EtaGap_start; l < EtaGap_stop; l++) // eta gap bin
@@ -532,7 +557,7 @@ void get_phi_flow(const Int_t energy = 3)
             CanName = Form("c_Phi2_SM_Total_Centrality_%d",j);
             c_mMass_Phi2_SM_total[j] = new TCanvas(CanName.Data(),CanName.Data(),1400,10,900,600);
             c_mMass_Phi2_SM_total[j]->Divide(3,2);
-            for(Int_t i = 0; i < pt_total_New_phi; i++)
+            for(Int_t i = 0; i < ycm_total_New_phi; i++)
             {
                 c_mMass_Phi2_SM_total[j]->cd(i+1);
                 c_mMass_Phi2_SM_total[j]->cd(i+1)->SetLeftMargin(0.2);
@@ -549,7 +574,7 @@ void get_phi_flow(const Int_t energy = 3)
                 f_PolyBW_Phi2_total[i][j]->SetLineColor(2);
                 f_PolyBW_Phi2_total[i][j]->SetLineWidth(1);
                 f_PolyBW_Phi2_total[i][j]->Draw("l same");
-                CanName = Form("f_poly2_pt_%d_Centrality_%d",i,j);
+                CanName = Form("f_poly2_ycm_%d_Centrality_%d",i,j);
                 f_Poly_Phi2_total[i][j] = new TF1(CanName.Data(),Poly,BW_Start,BW_Stop,2);
                 f_Poly_Phi2_total[i][j]->FixParameter(0,f_PolyBW_Phi2_total[i][j]->GetParameter(3));
                 f_Poly_Phi2_total[i][j]->FixParameter(1,f_PolyBW_Phi2_total[i][j]->GetParameter(4));
@@ -562,7 +587,7 @@ void get_phi_flow(const Int_t energy = 3)
             CanName = Form("c_Phi3_SM_Total_Centrality_%d",j);
             c_mMass_Phi3_SM_total[j] = new TCanvas(CanName.Data(),CanName.Data(),1400,10,900,600);
             c_mMass_Phi3_SM_total[j]->Divide(3,2);
-            for(Int_t i = 0; i < pt_total_New_phi; i++)
+            for(Int_t i = 0; i < ycm_total_New_phi; i++)
             {
                 c_mMass_Phi3_SM_total[j]->cd(i+1);
                 c_mMass_Phi3_SM_total[j]->cd(i+1)->SetLeftMargin(0.2);
@@ -579,7 +604,7 @@ void get_phi_flow(const Int_t energy = 3)
                 f_PolyBW_Phi3_total[i][j]->SetLineColor(2);
                 f_PolyBW_Phi3_total[i][j]->SetLineWidth(1);
                 f_PolyBW_Phi3_total[i][j]->Draw("l same");
-                CanName = Form("f_poly2_pt_%d_Centrality_%d_3rd",i,j);
+                CanName = Form("f_poly2_ycm_%d_Centrality_%d_3rd",i,j);
                 f_Poly_Phi3_total[i][j] = new TF1(CanName.Data(),Poly,BW_Start,BW_Stop,2);
                 f_Poly_Phi3_total[i][j]->FixParameter(0,f_PolyBW_Phi3_total[i][j]->GetParameter(3));
                 f_Poly_Phi3_total[i][j]->FixParameter(1,f_PolyBW_Phi3_total[i][j]->GetParameter(4));
@@ -600,9 +625,9 @@ void get_phi_flow(const Int_t energy = 3)
 
 
     // Poly+BW Fit for phi-psi bin
-    TF1 *f_PolyBW_Phi2[pt_total_New_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
-    //TF1 *f_PolyBW_Phi3[pt_total_New_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
-    for(Int_t i = 0; i < pt_total_New_phi; i++) // pt bin
+    TF1 *f_PolyBW_Phi2[ycm_total_New_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
+    //TF1 *f_PolyBW_Phi3[ycm_total_New_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
+    for(Int_t i = 0; i < ycm_total_New_phi; i++) // pt bin
     {
         for(Int_t j = Centrality_start; j < Centrality_stop; j++) // centrality bin
         {
@@ -612,7 +637,7 @@ void get_phi_flow(const Int_t energy = 3)
                 {
                     TString HistName;
 
-                    HistName = Form("f_pt_%d_Centrality_%d_phi_Psi_%d_2nd_Phi_SE",i,j,m);
+                    HistName = Form("f_ycm_%d_Centrality_%d_phi_Psi_%d_1st_Phi_SE",i,j,m);
                     f_PolyBW_Phi2[i][j][l][m] = new TF1(HistName.Data(),PolyBreitWigner,BW_Start,BW_Stop,5);
                     for(Int_t n_par = 0; n_par < 5; n_par++)
                     {
@@ -625,7 +650,7 @@ void get_phi_flow(const Int_t energy = 3)
                     f_PolyBW_Phi2[i][j][l][m]->SetParameter(4,ParFit2_total[i][j][4]);
                     f_PolyBW_Phi2[i][j][l][m]->SetRange(BW_Start,BW_Stop);
                     /*
-                    HistName = Form("f_pt_%d_Centrality_%d_phi_Psi_%d_3rd_Phi_SE",i,j,m);
+                    HistName = Form("f_ycm_%d_Centrality_%d_phi_Psi_%d_3rd_Phi_SE",i,j,m);
                     f_PolyBW_Phi3[i][j][m] = new TF1(HistName.Data(),PolyBreitWigner,BW_Start,BW_Stop,5);
                     for(Int_t n_par = 0; n_par < 5; n_par++)
                     {
@@ -648,9 +673,9 @@ void get_phi_flow(const Int_t energy = 3)
     cout << "test 6 ! " <<  endl;
 
     // subtract linear background from signal
-    TF1 *f_Poly_Phi2[pt_total_New_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
-    // TF1 *f_Poly_Phi3[pt_total_New_phi][Centrality_total][Phi_Psi_total];
-    for(Int_t i = 0; i < pt_total_New_phi; i++)
+    TF1 *f_Poly_Phi2[ycm_total_New_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
+    // TF1 *f_Poly_Phi3[ycm_total_New_phi][Centrality_total][Phi_Psi_total];
+    for(Int_t i = 0; i < ycm_total_New_phi; i++)
     {
         for(Int_t j = Centrality_start; j < Centrality_stop; j++) // centrality bin
         {
@@ -660,14 +685,14 @@ void get_phi_flow(const Int_t energy = 3)
                 {
                     TString FuncName;
 
-                    FuncName = Form("f_poly2_pt_%d_Centrality_%d_phi_Psi_%d",i,j,m);
+                    FuncName = Form("f_poly2_ycm_%d_Centrality_%d_phi_Psi_%d",i,j,m);
                     f_Poly_Phi2[i][j][l][m] = new TF1(FuncName.Data(),Poly,BW_Start,BW_Stop,2);
                     f_Poly_Phi2[i][j][l][m]->FixParameter(0,f_PolyBW_Phi2[i][j][l][m]->GetParameter(3));
                     f_Poly_Phi2[i][j][l][m]->FixParameter(1,f_PolyBW_Phi2[i][j][l][m]->GetParameter(4));
                     h_mMass_Phi2_SM_New_Bin[i][j][l][m]->Add(f_Poly_Phi2[i][j][l][m],-1.0);
                     //h_mMass_Phi2_SM_new_bin[i][j][l][m]->Add(f_Poly_Phi2[i][j][l][m],-1.0);
                     /*
-                    FuncName = Form("f_poly3_pt_%d_Centrality_%d_phi_Psi_%d",i,j,m);
+                    FuncName = Form("f_poly3_ycm_%d_Centrality_%d_phi_Psi_%d",i,j,m);
                     f_Poly_Phi3[i][j][m] = new TF1(FuncName.Data(),Poly,BW_Start,BW_Stop,2);
                     f_Poly_Phi3[i][j][m]->FixParameter(0,f_PolyBW_Phi3[i][j][m]->GetParameter(3));
                     f_Poly_Phi3[i][j][m]->FixParameter(1,f_PolyBW_Phi3[i][j][m]->GetParameter(4));
@@ -681,24 +706,24 @@ void get_phi_flow(const Int_t energy = 3)
 
     // do gaussian fit and extract width of Phi from merged phi-Psi distribution
     // do breit wigner fit to get fit parameter for counting
-    TH1F *h_mMass_Phi2_Sig_total[pt_total_New_phi][Centrality_total];
-    // TH1F *h_mMass_Phi3_Sig_total[pt_total_New_phi][Centrality_total];
+    TH1F *h_mMass_Phi2_Sig_total[ycm_total_New_phi][Centrality_total];
+    // TH1F *h_mMass_Phi3_Sig_total[ycm_total_New_phi][Centrality_total];
 
-    TF1 *f_gauss_2[pt_total_New_phi][Centrality_total];
-    TF1 *f_gauss_3[pt_total_New_phi][Centrality_total];
+    TF1 *f_gauss_2[ycm_total_New_phi][Centrality_total];
+    TF1 *f_gauss_3[ycm_total_New_phi][Centrality_total];
 
     //Float_t gaussSig = 0.60;
     //Float_t gaussSig = 1.5; // dchen
     Float_t gaussSig = 3.; // dchen
-    Float_t ParGaus_2[pt_total_New_phi][Centrality_total][2];
-    Float_t ParGaus_3[pt_total_New_phi][Centrality_total][2];
+    Float_t ParGaus_2[ycm_total_New_phi][Centrality_total][2];
+    Float_t ParGaus_3[ycm_total_New_phi][Centrality_total][2];
 
-    TF1 *f_bw_2[pt_total_New_phi][Centrality_total];
-    TF1 *f_bw_3[pt_total_New_phi][Centrality_total];
+    TF1 *f_bw_2[ycm_total_New_phi][Centrality_total];
+    TF1 *f_bw_3[ycm_total_New_phi][Centrality_total];
 
-    Float_t ParBW_2[pt_total_New_phi][Centrality_total][2];
-    Float_t ParBW_3[pt_total_New_phi][Centrality_total][2];
-    for(Int_t i = 0; i < pt_total_New_phi; i++) // pt bin
+    Float_t ParBW_2[ycm_total_New_phi][Centrality_total][2];
+    Float_t ParBW_3[ycm_total_New_phi][Centrality_total][2];
+    for(Int_t i = 0; i < ycm_total_New_phi; i++) // pt bin
     {
         for(Int_t j = Centrality_start; j < Centrality_stop; j++) // centrality bin
         {
@@ -708,9 +733,9 @@ void get_phi_flow(const Int_t energy = 3)
                 TString FuncName_g;
                 TString FuncName_bw;
 
-                HistName = Form("Sig_pt_%d_Centality_%d_2nd",i,j);
-                FuncName_g = Form("f_gauss_pt_%d_Centrality_%d_2nd",i,j);
-                FuncName_bw = Form("f_bw_pt_%d_Centrality_%d_2nd",i,j);
+                HistName = Form("Sig_ycm_%d_Centality_%d_1st",i,j);
+                FuncName_g = Form("f_gauss_ycm_%d_Centrality_%d_1st",i,j);
+                FuncName_bw = Form("f_bw_ycm_%d_Centrality_%d_1st",i,j);
                 for(Int_t m = 0; m < Phi_Psi_total; m++)
                 {
                     if(m == 0)
@@ -755,9 +780,9 @@ void get_phi_flow(const Int_t energy = 3)
                 ParBW_2[i][j][1] = f_bw_2[i][j]->GetParameter(1);
 
                 /*
-                HistName = Form("Sig_pt_%d_Centality_%d_3rd",i,j);
-                FuncName_g = Form("f_gauss_pt_%d_Centrality_%d_3rd",i,j);
-                FuncName_bw = Form("f_bw_pt_%d_Centrality_%d_3rd",i,j);
+                HistName = Form("Sig_ycm_%d_Centality_%d_3rd",i,j);
+                FuncName_g = Form("f_gauss_ycm_%d_Centrality_%d_3rd",i,j);
+                FuncName_bw = Form("f_bw_ycm_%d_Centrality_%d_3rd",i,j);
                 for(Int_t m = 0; m < Phi_Psi_total; m++)
                 {
                     if(m == 0)
@@ -796,9 +821,9 @@ void get_phi_flow(const Int_t energy = 3)
     cout << "test 8 ! " <<  endl;
 
     // Draw InvMass distribution for all pt bin with Gaussian fit
-    TCanvas *c2_phi_Psi[pt_total_New_phi][Centrality_total];
-    // TCanvas *c3_phi_Psi[pt_total_New_phi][Centrality_total];
-    for(Int_t i = 0; i < pt_total_New_phi; i++)
+    TCanvas *c2_phi_Psi[ycm_total_New_phi][Centrality_total];
+    // TCanvas *c3_phi_Psi[ycm_total_New_phi][Centrality_total];
+    for(Int_t i = 0; i < ycm_total_New_phi; i++)
     {
         for(Int_t j = Centrality_start; j < Centrality_stop; j++) // centrality bin
         {
@@ -806,7 +831,7 @@ void get_phi_flow(const Int_t energy = 3)
             {
                 TString CanName;
 
-                CanName = Form("c2_phi_Psi_pt_%d_Centrality_%d",i,j);
+                CanName = Form("c2_phi_Psi_ycm_%d_Centrality_%d",i,j);
                 c2_phi_Psi[i][j] = new TCanvas(CanName.Data(),CanName.Data(),1400,10,900,900);
                 c2_phi_Psi[i][j]->Divide(3,3);
                 for(Int_t m = 0; m < Phi_Psi_total; m++) // phi-psi bin
@@ -876,7 +901,7 @@ void get_phi_flow(const Int_t energy = 3)
                 f_gauss_2[i][j]->Draw("l same");
                 PlotLine(0.98,1.05,0,0,1,2,2);
                 /*
-                CanName = Form("c3_phi_Psi_pt_%d_Centrality_%d",i,j);
+                CanName = Form("c3_phi_Psi_ycm_%d_Centrality_%d",i,j);
                 c3_phi_Psi[i][j] = new TCanvas(CanName.Data(),CanName.Data(),1400,10,900,900);
                 c3_phi_Psi[i][j]->Divide(3,3);
                 for(Int_t m = 0; m < Phi_Psi_total; m++) // phi-psi bin
@@ -934,9 +959,9 @@ void get_phi_flow(const Int_t energy = 3)
     cout << "test 9 ! " <<  endl;
 
     // calculate total counts and errors for each phi-Psi bin by bin counting
-    TH1F *h_Counts2[pt_total_New_phi][Centrality_total];
-    // TH1F *h_Counts3[pt_total_New_phi][Centrality_total];
-    for(Int_t i = 0; i < pt_total_New_phi; i++)
+    TH1F *h_Counts2[ycm_total_New_phi][Centrality_total];
+    // TH1F *h_Counts3[ycm_total_New_phi][Centrality_total];
+    for(Int_t i = 0; i < ycm_total_New_phi; i++)
     {
         for(Int_t j = Centrality_start; j < Centrality_stop; j++) // centrality bin
         {
@@ -944,7 +969,7 @@ void get_phi_flow(const Int_t energy = 3)
             {
                 TString HistName;
 
-                HistName = Form("Counts2_pt_%d_Centrality_%d",i,j);
+                HistName = Form("Counts2_ycm_%d_Centrality_%d",i,j);
                 h_Counts2[i][j] = new TH1F(HistName.Data(),HistName.Data(),7,0,PI_max[0]);
                 for(Int_t m = 0; m < Phi_Psi_total; m++) // phi-psi bin
                 {
@@ -973,7 +998,7 @@ void get_phi_flow(const Int_t energy = 3)
                     h_Counts2[i][j]->SetBinError(h_Counts2[i][j]->FindBin(bin_center),TMath::Sqrt(errors));
                 }
                 /*
-                HistName = Form("Counts3_pt_%d_Centrality_%d",i,j);
+                HistName = Form("Counts3_ycm_%d_Centrality_%d",i,j);
                 h_Counts3[i][j] = new TH1F(HistName.Data(),HistName.Data(),7,0,PI_max[1]);
                 for(Int_t m = 0; m < Phi_Psi_total; m++) // phi-psi bin
                 {
@@ -997,7 +1022,7 @@ void get_phi_flow(const Int_t energy = 3)
     cout << "test 10 ! " <<  endl;
 
     // Draw phi-Psi distribution with counting
-    for(Int_t i = 0; i < pt_total_New_phi; i++)
+    for(Int_t i = 0; i < ycm_total_New_phi; i++)
     {
         for(Int_t j = Centrality_start; j < Centrality_stop; j++) // centrality bin
         {
@@ -1008,13 +1033,14 @@ void get_phi_flow(const Int_t energy = 3)
                 c2_phi_Psi[i][j]->cd(9)->SetBottomMargin(0.2);
                 c2_phi_Psi[i][j]->cd(9)->SetTicks(1,1);
                 c2_phi_Psi[i][j]->cd(9)->SetGrid(0,0);
-                TString Title = Form("%1.1f < p_{T} < %1.1f GeV/c",pt_low_phi[i],pt_up_phi[i]);
+                TString Title = Form("%1.1f < p_{T} < %1.1f GeV/c",ycm_low_phi[i],ycm_up_phi[i]);
                 h_Counts2[i][j]->SetTitle(Title.Data());
                 h_Counts2[i][j]->SetNdivisions(505,"X");
                 h_Counts2[i][j]->SetNdivisions(505,"Y");
                 h_Counts2[i][j]->GetXaxis()->SetLabelSize(0.05);
                 h_Counts2[i][j]->GetYaxis()->SetLabelSize(0.05);
-                h_Counts2[i][j]->GetXaxis()->SetTitle("#phi-#Psi_{2}");
+                //h_Counts2[i][j]->GetXaxis()->SetTitle("#phi-#Psi_{2}");
+                h_Counts2[i][j]->GetXaxis()->SetTitle("#phi-#Psi_{1}");
                 h_Counts2[i][j]->GetYaxis()->SetTitle("Counts");
                 h_Counts2[i][j]->GetXaxis()->SetTitleSize(0.06);
                 h_Counts2[i][j]->GetYaxis()->SetTitleSize(0.06);
@@ -1069,13 +1095,13 @@ void get_phi_flow(const Int_t energy = 3)
     cout << "test 11 ! " <<  endl;
 
     // Breit Wigner fit for phi-Psi bin
-    TF1 *f_bw_phi_2[pt_total_New_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
-    //TF1 *f_bw_phi_3[pt_total_New_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
+    TF1 *f_bw_phi_2[ycm_total_New_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
+    //TF1 *f_bw_phi_3[ycm_total_New_phi][Centrality_total][EtaGap_total][Phi_Psi_total];
 
     // calculate total counts and errors for each phi-Psi bin by BW Integration
-    TH1F *h_Counts2_bw[pt_total_New_phi][Centrality_total];
-    // TH1F *h_Counts3_bw[pt_total_New_phi][Centrality_total];
-    for(Int_t i = 0; i < pt_total_New_phi; i++)
+    TH1F *h_Counts2_bw[ycm_total_New_phi][Centrality_total];
+    // TH1F *h_Counts3_bw[ycm_total_New_phi][Centrality_total];
+    for(Int_t i = 0; i < ycm_total_New_phi; i++)
     {
         for(Int_t j = Centrality_start; j < Centrality_stop; j++) // centrality bin
         {
@@ -1083,11 +1109,11 @@ void get_phi_flow(const Int_t energy = 3)
             {
                 TString HistName;
 
-                HistName = Form("Counts2_pt_%d_Centrality_%d_bw",i,j);
+                HistName = Form("Counts2_ycm_%d_Centrality_%d_bw",i,j);
                 h_Counts2_bw[i][j] = new TH1F(HistName.Data(),HistName.Data(),7,0,PI_max[0]);
                 for(Int_t m = 0; m < Phi_Psi_total; m++) // phi-psi bin
                 {
-                    TString FuncName_bw = Form("f_bw_pt_%d_Centrality_%d_phi_Psi_%d_2nd",i,j,m);
+                    TString FuncName_bw = Form("f_bw_ycm_%d_Centrality_%d_phi_Psi_%d_1st",i,j,m);
                     f_bw_phi_2[i][j][l][m] = new TF1(FuncName_bw.Data(),BreitWigner,BW_Start,BW_Stop,3);;
                     f_bw_phi_2[i][j][l][m]->FixParameter(0,ParBW_2[i][j][0]);
                     f_bw_phi_2[i][j][l][m]->FixParameter(1,ParBW_2[i][j][1]);
@@ -1106,11 +1132,11 @@ void get_phi_flow(const Int_t energy = 3)
                     h_Counts2_bw[i][j]->SetBinError(h_Counts2_bw[i][j]->FindBin(bin_center),errors);
                 }
                 /*
-                HistName = Form("Counts3_pt_%d_Centrality_%d_bw",i,j);
+                HistName = Form("Counts3_ycm_%d_Centrality_%d_bw",i,j);
                 h_Counts3_bw[i][j] = new TH1F(HistName.Data(),HistName.Data(),7,0,PI_max[1]);
                 for(Int_t m = 0; m < Phi_Psi_total; m++) // phi-psi bin
                 {
-                    TString FuncName_bw = Form("f_bw_pt_%d_Centrality_%d_phi_Psi_%d_3rd",i,j,m);
+                    TString FuncName_bw = Form("f_bw_ycm_%d_Centrality_%d_phi_Psi_%d_3rd",i,j,m);
                     f_bw_phi_3[i][j][m] = new TF1(FuncName_bw.Data(),BreitWigner,BW_Start,BW_Stop,3);;
                     f_bw_phi_3[i][j][m]->FixParameter(0,ParBW_3[i][j][0]);
                     f_bw_phi_3[i][j][m]->FixParameter(1,ParBW_3[i][j][1]);
@@ -1133,9 +1159,9 @@ void get_phi_flow(const Int_t energy = 3)
     cout << "test 12 ! " <<  endl;
 
     // Draw Breit Wigner fit for InvMass distribution of all pt bin
-    TCanvas *c2_phi_Psi_bw[pt_total_New_phi][Centrality_total];
-    // TCanvas *c3_phi_Psi_bw[pt_total_New_phi][Centrality_total];
-    for(Int_t i = 0; i < pt_total_New_phi; i++)
+    TCanvas *c2_phi_Psi_bw[ycm_total_New_phi][Centrality_total];
+    // TCanvas *c3_phi_Psi_bw[ycm_total_New_phi][Centrality_total];
+    for(Int_t i = 0; i < ycm_total_New_phi; i++)
     {
         for(Int_t j = Centrality_start; j < Centrality_stop; j++) // centrality bin
         {
@@ -1143,7 +1169,7 @@ void get_phi_flow(const Int_t energy = 3)
             {
                 TString CanName;
 
-                CanName = Form("c2_phi_Psi_pt_%d_Centrality_%d_bw",i,j);
+                CanName = Form("c2_phi_Psi_ycm_%d_Centrality_%d_bw",i,j);
                 c2_phi_Psi_bw[i][j] = new TCanvas(CanName.Data(),CanName.Data(),1400,10,900,900);
                 c2_phi_Psi_bw[i][j]->Divide(3,3);
                 for(Int_t m = 0; m < Phi_Psi_total; m++) // phi-psi bin
@@ -1175,7 +1201,7 @@ void get_phi_flow(const Int_t energy = 3)
                 f_gauss_2[i][j]->Draw("l same");
                 PlotLine(0.98,1.05,0,0,1,2,2);
                 /*
-                CanName = Form("c3_phi_Psi_pt_%d_Centrality_%d_bw",i,j);
+                CanName = Form("c3_phi_Psi_ycm_%d_Centrality_%d_bw",i,j);
                 c3_phi_Psi_bw[i][j] = new TCanvas(CanName.Data(),CanName.Data(),1400,10,900,900);
                 c3_phi_Psi_bw[i][j]->Divide(3,3);
                 for(Int_t m = 0; m < Phi_Psi_total; m++) // phi-psi bin
@@ -1212,7 +1238,7 @@ void get_phi_flow(const Int_t energy = 3)
     cout << "test 13 ! " <<  endl;
 
     // Draw phi-Psi distribution with Breit Wignar Fit
-    for(Int_t i = 0; i < pt_total_New_phi; i++)
+    for(Int_t i = 0; i < ycm_total_New_phi; i++)
     {
         for(Int_t j = Centrality_start; j < Centrality_stop; j++) // centrality bin
         {
@@ -1223,13 +1249,14 @@ void get_phi_flow(const Int_t energy = 3)
                 c2_phi_Psi_bw[i][j]->cd(9)->SetBottomMargin(0.2);
                 c2_phi_Psi_bw[i][j]->cd(9)->SetTicks(1,1);
                 c2_phi_Psi_bw[i][j]->cd(9)->SetGrid(0,0);
-                TString Title = Form("%1.1f < p_{T} < %1.1f GeV/c",pt_low_phi[i],pt_up_phi[i]);
+                TString Title = Form("%1.1f < p_{T} < %1.1f GeV/c",ycm_low_phi[i],ycm_up_phi[i]);
                 h_Counts2_bw[i][j]->SetTitle(Title.Data());
                 h_Counts2_bw[i][j]->SetNdivisions(505,"X");
                 h_Counts2_bw[i][j]->SetNdivisions(505,"Y");
                 h_Counts2_bw[i][j]->GetXaxis()->SetLabelSize(0.05);
                 h_Counts2_bw[i][j]->GetYaxis()->SetLabelSize(0.05);
-                h_Counts2_bw[i][j]->GetXaxis()->SetTitle("#phi-#Psi_{2}");
+                //h_Counts2_bw[i][j]->GetXaxis()->SetTitle("#phi-#Psi_{2}");
+                h_Counts2_bw[i][j]->GetXaxis()->SetTitle("#phi-#Psi_{1}");
                 h_Counts2_bw[i][j]->GetYaxis()->SetTitle("Counts");
                 h_Counts2_bw[i][j]->GetXaxis()->SetTitleSize(0.06);
                 h_Counts2_bw[i][j]->GetYaxis()->SetTitleSize(0.06);
@@ -1280,14 +1307,14 @@ void get_phi_flow(const Int_t energy = 3)
     cout << "test 14 ! " <<  endl;
 
     // do cos fit to extract raw v2 and v3
-    TF1 *f_phi2[pt_total_New_phi][Centrality_total];
-    TF1 *f_phi3[pt_total_New_phi][Centrality_total];
+    TF1 *f_phi2[ycm_total_New_phi][Centrality_total];
+    TF1 *f_phi3[ycm_total_New_phi][Centrality_total];
 
-    TF1 *f_phi2_bw[pt_total_New_phi][Centrality_total];
-    TF1 *f_phi3_bw[pt_total_New_phi][Centrality_total];
+    TF1 *f_phi2_bw[ycm_total_New_phi][Centrality_total];
+    TF1 *f_phi3_bw[ycm_total_New_phi][Centrality_total];
     /*
     */
-    for(Int_t i = 0; i < pt_total_New_phi; i++)
+    for(Int_t i = 0; i < ycm_total_New_phi; i++)
     {
         for(Int_t j = Centrality_start; j < Centrality_stop; j++) // centrality bin
         {
@@ -1295,25 +1322,25 @@ void get_phi_flow(const Int_t energy = 3)
             {
                 TString Flow_phi;
 
-                Flow_phi = Form("flow_pt_%d_Centrality_%d_2nd_phi",i,j);
-                f_phi2[i][j] = new TF1(Flow_phi.Data(),flow_2,0.0,PI_max[0],2);
+                Flow_phi = Form("flow_ycm_%d_Centrality_%d_1st_phi",i,j);
+                f_phi2[i][j] = new TF1(Flow_phi.Data(),flow_1,0.0,PI_max[0],2);
                 f_phi2[i][j]->SetParameter(0,2.0);
                 f_phi2[i][j]->SetParameter(1,1.0);
                 h_Counts2[i][j]->Fit(f_phi2[i][j],"NQM");
 
-                // Flow_phi = Form("flow_pt_%d_Centrality_%d_3rd_phi",i,j);
+                // Flow_phi = Form("flow_ycm_%d_Centrality_%d_3rd_phi",i,j);
                 // f_phi3[i][j] = new TF1(Flow_phi.Data(),flow_3,0.0,PI_max[1],2);
                 // f_phi3[i][j]->SetParameter(0,2.0);
                 // f_phi3[i][j]->SetParameter(1,1.0);
                 // h_Counts3[i][j]->Fit(f_phi3[i][j],"NQM");
 
-                Flow_phi = Form("flow_pt_%d_Centrality_%d_2nd_phi_bw",i,j);
-                f_phi2_bw[i][j] = new TF1(Flow_phi.Data(),flow_2,0.0,PI_max[0],2);
+                Flow_phi = Form("flow_ycm_%d_Centrality_%d_1st_phi_bw",i,j);
+                f_phi2_bw[i][j] = new TF1(Flow_phi.Data(),flow_1,0.0,PI_max[0],2);
                 f_phi2_bw[i][j]->SetParameter(0,2.0);
                 f_phi2_bw[i][j]->SetParameter(1,1.0);
                 h_Counts2_bw[i][j]->Fit(f_phi2_bw[i][j],"NQM");
 
-                // Flow_phi = Form("flow_pt_%d_Centrality_%d_3rd_phi_bw",i,j);
+                // Flow_phi = Form("flow_ycm_%d_Centrality_%d_3rd_phi_bw",i,j);
                 // f_phi3_bw[i][j] = new TF1(Flow_phi.Data(),flow_3,0.0,PI_max[1],2);
                 // f_phi3_bw[i][j]->SetParameter(0,2.0);
                 // f_phi3_bw[i][j]->SetParameter(1,1.0);
@@ -1324,7 +1351,7 @@ void get_phi_flow(const Int_t energy = 3)
     cout << "test 15 ! " <<  endl;
 
     // Draw the fit line
-    for(Int_t i = 0; i < pt_total_New_phi; i++)
+    for(Int_t i = 0; i < ycm_total_New_phi; i++)
     {
         for(Int_t j = Centrality_start; j < Centrality_stop; j++) // centrality bin
         {
@@ -1361,7 +1388,7 @@ void get_phi_flow(const Int_t energy = 3)
             CanName = Form("c_phi_Psi2_Centrality_%d",j);
             c_phi_Psi2[j] = new TCanvas(CanName.Data(),CanName.Data(),1400,10,900,600);
             c_phi_Psi2[j]->Divide(3,2);
-            for(Int_t i = 0; i < pt_total_New_phi; i++)
+            for(Int_t i = 0; i < ycm_total_New_phi; i++)
             {
                 c_phi_Psi2[j]->cd(i+1);
                 c_phi_Psi2[j]->cd(i+1)->SetLeftMargin(0.2);
@@ -1397,7 +1424,7 @@ void get_phi_flow(const Int_t energy = 3)
             CanName = Form("c_phi_Psi3_Centrality_%d",j);
             c_phi_Psi3[j] = new TCanvas(CanName.Data(),CanName.Data(),1400,10,900,600);
             c_phi_Psi3[j]->Divide(3,2);
-            for(Int_t i = 0; i < pt_total_New_phi; i++)
+            for(Int_t i = 0; i < ycm_total_New_phi; i++)
             {
                 c_phi_Psi3[j]->cd(i+1);
                 c_phi_Psi3[j]->cd(i+1)->SetLeftMargin(0.2);
@@ -1433,10 +1460,10 @@ void get_phi_flow(const Int_t energy = 3)
     cout << "test 16 ! " <<  endl;
 
     // fill raw v2 and v3 into histogram for counting and Breit Wignar
-    TH1F *h_flow_2[Centrality_total];
+    TH1F *h_flow_1[Centrality_total];
     // TH1F *h_flow_3[Centrality_total];
 
-    TH1F *h_flow_2_bw[Centrality_total];
+    TH1F *h_flow_1_bw[Centrality_total];
     // TH1F *h_flow_3_bw[Centrality_total];
     //txtFile << Form("##columns: pT ,  v2 , stat.error, syst.error") << endl;
     //txtFile << Form("#---------- phi-meson v2 ------------") << endl;
@@ -1449,52 +1476,52 @@ void get_phi_flow(const Int_t energy = 3)
             TString HistName;
 
     cout << "test 16.2 ! " <<  endl;
-            HistName = Form("flow_2_Centrality_%d_phi",j);
-            h_flow_2[j] = new TH1F(HistName.Data(),HistName.Data(),100,0.0,3.6);
+            HistName = Form("flow_1_Centrality_%d_phi",j);
+            h_flow_1[j] = new TH1F(HistName.Data(),HistName.Data(),100,-2.0,2.0);
     	    //txtFile << Form("# Counting method ===> ", j) << endl;
-            for(Int_t i = 0; i < pt_total_New_phi; i++)
+            for(Int_t i = 0; i < ycm_total_New_phi; i++)
             {
-                Float_t bin_center = h_flow_2[j]->FindBin((pt_low_phi[i]+pt_up_phi[i])/2.0);
+                Float_t bin_center = h_flow_1[j]->FindBin((ycm_low_phi[i]+ycm_up_phi[i])/2.0);
                 Float_t bin_content = f_phi2[i][j]->GetParameter(1);
                 Float_t bin_error = f_phi2[i][j]->GetParError(1);
-                h_flow_2[j]->SetBinContent(bin_center,bin_content);
-                h_flow_2[j]->SetBinError(bin_center,bin_error);
+                h_flow_1[j]->SetBinContent(bin_center,bin_content);
+                h_flow_1[j]->SetBinError(bin_center,bin_error);
 		cout << "Counting centrality: "<< j << "pt: "<<i<< " v2: "<< bin_content << " error: "<< bin_error << endl;
-    		//txtFile << Form("%1.2f \t%f \t%f", (pt_low_phi[i]+pt_up_phi[i])/2.0, bin_content, bin_error) << endl;
+    		//txtFile << Form("%1.2f \t%f \t%f", (ycm_low_phi[i]+ycm_up_phi[i])/2.0, bin_content, bin_error) << endl;
     cout << "test 16.3 ! " <<  endl;
             }
             /*
             HistName = Form("flow_3_Centrality_%d_phi",j);
             h_flow_3[j] = new TH1F(HistName.Data(),HistName.Data(),100,0.0,3.6);
-            for(Int_t i = 0; i < pt_total_New_phi; i++)
+            for(Int_t i = 0; i < ycm_total_New_phi; i++)
             {
-                Int_t bin_center = h_flow_3[j]->FindBin((pt_low_phi[i]+pt_up_phi[i])/2.0);
+                Int_t bin_center = h_flow_3[j]->FindBin((ycm_low_phi[i]+ycm_up_phi[i])/2.0);
                 Float_t bin_content = f_phi3[i][j]->GetParameter(1);
                 Float_t bin_error = f_phi3[i][j]->GetParError(1);
                 h_flow_3[j]->SetBinContent(bin_center,bin_content);
                 h_flow_3[j]->SetBinError(bin_center,bin_error);
             }
             */
-            HistName = Form("flow_2_Centrality_%d_phi_bw",j);
-            h_flow_2_bw[j] = new TH1F(HistName.Data(),HistName.Data(),100,0.0,3.6);
+            HistName = Form("flow_1_Centrality_%d_phi_bw",j);
+            h_flow_1_bw[j] = new TH1F(HistName.Data(),HistName.Data(),100,-2.0,2.0);
     	    //txtFile << Form("# BW fitting method ===> ", j) << endl;
-            for(Int_t i = 0; i < pt_total_New_phi; i++)
+            for(Int_t i = 0; i < ycm_total_New_phi; i++)
             {
-                Float_t bin_center = h_flow_2_bw[j]->FindBin((pt_low_phi[i]+pt_up_phi[i])/2.0);
+                Float_t bin_center = h_flow_1_bw[j]->FindBin((ycm_low_phi[i]+ycm_up_phi[i])/2.0);
                 Float_t bin_content = f_phi2_bw[i][j]->GetParameter(1);
                 Float_t bin_error = f_phi2_bw[i][j]->GetParError(1);
-                h_flow_2_bw[j]->SetBinContent(bin_center,bin_content);
-                h_flow_2_bw[j]->SetBinError(bin_center,bin_error);
+                h_flow_1_bw[j]->SetBinContent(bin_center,bin_content);
+                h_flow_1_bw[j]->SetBinError(bin_center,bin_error);
 		//cout << "BW centrality: "<< j << "pt: "<<i<< " v2: "<< bin_content << " error: "<< bin_error << endl;
-    		//txtFile << Form("%1.2f \t%f \t%f", (pt_low_phi[i]+pt_up_phi[i])/2.0, bin_content, bin_error) << endl;
+    		//txtFile << Form("%1.2f \t%f \t%f", (ycm_low_phi[i]+ycm_up_phi[i])/2.0, bin_content, bin_error) << endl;
     cout << "test 16.4 ! " <<  endl;
             }
             /*
             HistName = Form("flow_3_Centrality_%d_phi_bw",j);
             h_flow_3_bw[j] = new TH1F(HistName.Data(),HistName.Data(),100,0.0,3.6);
-            for(Int_t i = 0; i < pt_total_New_phi; i++)
+            for(Int_t i = 0; i < ycm_total_New_phi; i++)
             {
-                Int_t bin_center = h_flow_3_bw[j]->FindBin((pt_low_phi[i]+pt_up_phi[i])/2.0);
+                Int_t bin_center = h_flow_3_bw[j]->FindBin((ycm_low_phi[i]+ycm_up_phi[i])/2.0);
                 Float_t bin_content = f_phi3_bw[i][j]->GetParameter(1);
                 Float_t bin_error = f_phi3_bw[i][j]->GetParError(1);
                 h_flow_3_bw[j]->SetBinContent(bin_center,bin_content);
@@ -1521,15 +1548,15 @@ void get_phi_flow(const Int_t energy = 3)
             c_raw_v2[j]->cd()->SetTicks(1,1);
             c_raw_v2[j]->cd()->SetGrid(0,0);
 
-            h_flow_2[j]->SetMarkerStyle(20);
-            h_flow_2[j]->SetMarkerSize(1.0);
-            h_flow_2[j]->SetMarkerColor(1);
-            h_flow_2[j]->DrawCopy("pE");
+            h_flow_1[j]->SetMarkerStyle(20);
+            h_flow_1[j]->SetMarkerSize(1.0);
+            h_flow_1[j]->SetMarkerColor(1);
+            h_flow_1[j]->DrawCopy("pE");
 
-            h_flow_2_bw[j]->SetMarkerStyle(24);
-            h_flow_2_bw[j]->SetMarkerSize(1.0);
-            h_flow_2_bw[j]->SetMarkerColor(2);
-            h_flow_2_bw[j]->DrawCopy("pE same");
+            h_flow_1_bw[j]->SetMarkerStyle(24);
+            h_flow_1_bw[j]->SetMarkerSize(1.0);
+            h_flow_1_bw[j]->SetMarkerColor(2);
+            h_flow_1_bw[j]->DrawCopy("pE same");
             /*
             CanName = Form("c_raw_v3_Centrality_%d",j);
             c_raw_v3[j] = new TCanvas(CanName.Data(),CanName.Data(),10,10,800,800);
@@ -1670,7 +1697,8 @@ void get_phi_flow(const Int_t energy = 3)
     for(Int_t l = EtaGap_start; l < EtaGap_stop; l++)
     {
         TString ProName;
-        ProName = Form("p_r2_tpc_AB_sub0_1");
+        ProName = Form("p_r1_epd_ABCD_wt_sub0_1");
+        //ProName = Form("p_r2_tpc_AB_sub0_1");
         p_res2 = (TProfile*)input->Get(ProName.Data());
         // ProName = Form("Res3_EP",l);
         // p_res3[l] = (TProfile*)input->Get(ProName.Data());
@@ -1692,7 +1720,7 @@ void get_phi_flow(const Int_t energy = 3)
             {
                 if( (p_res2->GetBinContent(cent+1)) > 0 )
 		{
-                 res_2[cent] = TMath::Sqrt(p_res2->GetBinContent(cent+1));
+                 res_2[cent] = TMath::Sqrt(p_res2->GetBinContent(cent+1)) * TMath::Sqrt(2);
 		} else
 		{
                  res_2[cent] = -999.0;
@@ -1739,20 +1767,20 @@ void get_phi_flow(const Int_t energy = 3)
     {
         for(Int_t l = EtaGap_start; l < EtaGap_stop; l++) // eta gap bin
         {
-            h_flow_2[j]->Scale(mean_res_2_phi[j]);
+            h_flow_1[j]->Scale(mean_res_2_phi[j]);
             // h_flow_3[j]->Scale(mean_res_3_phi[j]);
-            h_flow_2_bw[j]->Scale(mean_res_2_phi[j]);
+            h_flow_1_bw[j]->Scale(mean_res_2_phi[j]);
             // h_flow_3_bw[j]->Scale(mean_res_3_phi[j]);
         }
     }
     cout << "test 26 ! " <<  endl;
 
     // save v2 and v3 into TGraphAsymmErrors and into file
-    TGraphAsymmErrors *g_flow_2[Centrality_total];
+    TGraphAsymmErrors *g_flow_1[Centrality_total];
     // TGraphAsymmErrors *g_flow_3[Centrality_total];
-    TGraphAsymmErrors *g_flow_2_bw[Centrality_total];
+    TGraphAsymmErrors *g_flow_1_bw[Centrality_total];
     // TGraphAsymmErrors *g_flow_3_bw[Centrality_total];
-    txtFile << Form("##columns: pT ,  v2 , stat.error, syst.error") << endl;
+    txtFile << Form("##columns: y ,  v1 , stat.error, syst.error") << endl;
     txtFile << Form("#---------- phi-meson v2 ------------") << endl;
     for(Int_t j = Centrality_start; j < Centrality_stop; j++) // centrality bin
     {
@@ -1760,57 +1788,57 @@ void get_phi_flow(const Int_t energy = 3)
         for(Int_t l = EtaGap_start; l < EtaGap_stop; l++) // eta gap bin
         {
     	    txtFile << Form("# Counting method ===> ", j) << endl;
-            TString g_Name_2 = Form("g_Centrality_%d_2nd",j);
-            g_flow_2[j] = new TGraphAsymmErrors();
-            g_flow_2[j]->SetName(g_Name_2.Data());
-            for(Int_t i = 0; i < pt_total_New_phi; i++)
+            TString g_Name_2 = Form("g_Centrality_%d_1st",j);
+            g_flow_1[j] = new TGraphAsymmErrors();
+            g_flow_1[j]->SetName(g_Name_2.Data());
+            for(Int_t i = 0; i < ycm_total_New_phi; i++)
             {
-                Float_t bin_center = h_flow_2[j]->FindBin((pt_low_phi[i]+pt_up_phi[i])/2.0);
-                Float_t bin_content = h_flow_2[j]->GetBinContent(bin_center);
-                Float_t bin_error   = h_flow_2[j]->GetBinError(bin_center);
+                Float_t bin_center = h_flow_1[j]->FindBin((ycm_low_phi[i]+ycm_up_phi[i])/2.0);
+                Float_t bin_content = h_flow_1[j]->GetBinContent(bin_center);
+                Float_t bin_error   = h_flow_1[j]->GetBinError(bin_center);
 		cout << "Counting centrality: "<< j << ", pt: "<<i<< " v2: "<< bin_content << " error: "<< bin_error << endl;
-                g_flow_2[j]->SetPoint(i,(pt_low_phi[i]+pt_up_phi[i])/2.0,bin_content);
-                g_flow_2[j]->SetPointError(i,0.0,0.0,bin_error,bin_error);
-    		txtFile << Form("%1.2f \t%f \t%f", (pt_low_phi[i]+pt_up_phi[i])/2.0, bin_content, bin_error) << endl;
+                g_flow_1[j]->SetPoint(i,(ycm_low_phi[i]+ycm_up_phi[i])/2.0,bin_content);
+                g_flow_1[j]->SetPointError(i,0.0,0.0,bin_error,bin_error);
+    		txtFile << Form("%1.2f \t%f \t%f", (ycm_low_phi[i]+ycm_up_phi[i])/2.0, bin_content, bin_error) << endl;
             }
             /*
             TString g_Name_3 = Form("g_Centrality_%d_3rd",j);
             g_flow_3[j] = new TGraphAsymmErrors();
             g_flow_3[j]->SetName(g_Name_3.Data());
-            for(Int_t i = 0; i < pt_total_New_phi; i++)
+            for(Int_t i = 0; i < ycm_total_New_phi; i++)
             {
-                Int_t bin_center = h_flow_3[j]->FindBin((pt_low_phi[i]+pt_up_phi[i])/2.0);
+                Int_t bin_center = h_flow_3[j]->FindBin((ycm_low_phi[i]+ycm_up_phi[i])/2.0);
                 Float_t bin_content = h_flow_3[j]->GetBinContent(bin_center);
                 Float_t bin_error   = h_flow_3[j]->GetBinError(bin_center);
-                g_flow_3[j]->SetPoint(i,(pt_low_phi[i]+pt_up_phi[i])/2.0,bin_content);
+                g_flow_3[j]->SetPoint(i,(ycm_low_phi[i]+ycm_up_phi[i])/2.0,bin_content);
                 g_flow_3[j]->SetPointError(i,0.0,0.0,bin_error,bin_error);
             }
             */
-            TString g_Name_2_bw = Form("g_Centrality_%d_2nd_bw",j);
-            g_flow_2_bw[j] = new TGraphAsymmErrors();
-            g_flow_2_bw[j]->SetName(g_Name_2_bw.Data());
+            TString g_Name_2_bw = Form("g_Centrality_%d_1st_bw",j);
+            g_flow_1_bw[j] = new TGraphAsymmErrors();
+            g_flow_1_bw[j]->SetName(g_Name_2_bw.Data());
     	    txtFile << Form("# BW fitting method ===> ", j) << endl;
-            for(Int_t i = 0; i < pt_total_New_phi; i++)
+            for(Int_t i = 0; i < ycm_total_New_phi; i++)
             {
-                Float_t bin_center = h_flow_2_bw[j]->FindBin((pt_low_phi[i]+pt_up_phi[i])/2.0);
-                Float_t bin_content = h_flow_2_bw[j]->GetBinContent(bin_center);
-                Float_t bin_error   = h_flow_2_bw[j]->GetBinError(bin_center);
+                Float_t bin_center = h_flow_1_bw[j]->FindBin((ycm_low_phi[i]+ycm_up_phi[i])/2.0);
+                Float_t bin_content = h_flow_1_bw[j]->GetBinContent(bin_center);
+                Float_t bin_error   = h_flow_1_bw[j]->GetBinError(bin_center);
 		cout << "BW centrality: "<< j << ", pt: "<<i<< " v2: "<< bin_content << " error: "<< bin_error << endl;
-                g_flow_2_bw[j]->SetPoint(i,(pt_low_phi[i]+pt_up_phi[i])/2.0+0.05,bin_content);
-                g_flow_2_bw[j]->SetPointError(i,0.0,0.0,bin_error,bin_error);
-    		txtFile << Form("%1.2f \t%f \t%f", (pt_low_phi[i]+pt_up_phi[i])/2.0, bin_content, bin_error) << endl;
+                g_flow_1_bw[j]->SetPoint(i,(ycm_low_phi[i]+ycm_up_phi[i])/2.0+0.05,bin_content);
+                g_flow_1_bw[j]->SetPointError(i,0.0,0.0,bin_error,bin_error);
+    		txtFile << Form("%1.2f \t%f \t%f", (ycm_low_phi[i]+ycm_up_phi[i])/2.0, bin_content, bin_error) << endl;
             }
 	    cout << endl;
             /*
             TString g_Name_3_bw = Form("g_Centrality_%d_3rd_bw",j);
             g_flow_3_bw[j] = new TGraphAsymmErrors();
             g_flow_3_bw[j]->SetName(g_Name_3_bw.Data());
-            for(Int_t i = 0; i < pt_total_New_phi; i++)
+            for(Int_t i = 0; i < ycm_total_New_phi; i++)
             {
-                Int_t bin_center = h_flow_3_bw[j]->FindBin((pt_low_phi[i]+pt_up_phi[i])/2.0);
+                Int_t bin_center = h_flow_3_bw[j]->FindBin((ycm_low_phi[i]+ycm_up_phi[i])/2.0);
                 Float_t bin_content = h_flow_3_bw[j]->GetBinContent(bin_center);
                 Float_t bin_error   = h_flow_3_bw[j]->GetBinError(bin_center);
-                g_flow_3_bw[j]->SetPoint(i,(pt_low_phi[i]+pt_up_phi[i])/2.0+0.05,bin_content);
+                g_flow_3_bw[j]->SetPoint(i,(ycm_low_phi[i]+ycm_up_phi[i])/2.0+0.05,bin_content);
                 g_flow_3_bw[j]->SetPointError(i,0.0,0.0,bin_error,bin_error);
             }
             */
@@ -1824,11 +1852,11 @@ void get_phi_flow(const Int_t energy = 3)
     {
         for(Int_t l = EtaGap_start; l < EtaGap_stop; l++) // eta gap bin
         {
-            h_flow_2[j]->Write();
-            g_flow_2[j]->Write();
+            h_flow_1[j]->Write();
+            g_flow_1[j]->Write();
             // g_flow_3[j]->Write();
-            g_flow_2_bw[j]->Write();
-            h_flow_2_bw[j]->Write();
+            g_flow_1_bw[j]->Write();
+            h_flow_1_bw[j]->Write();
             // g_flow_3_bw[j]->Write();
         }
     }
@@ -1836,7 +1864,7 @@ void get_phi_flow(const Int_t energy = 3)
     File_OutPut->Close();
     //  File_Ana->Close();
     //  File_Ana->Close();
-    for(Int_t i = 0; i < pt_total_New_phi; i++)
+    for(Int_t i = 0; i < ycm_total_New_phi; i++)
     {
         for(Int_t j = Centrality_start; j < Centrality_stop; j++) // centrality bin
         {
@@ -1844,13 +1872,13 @@ void get_phi_flow(const Int_t energy = 3)
             {
                 TString CanName;
 
-                CanName = Form("./figures_phi/c2_phi_Psi_pt_%d_Centrality_%d.pdf",i,j);
+                CanName = Form("./figures_phi/c2_phi_Psi_ycm_%d_Centrality_%d.pdf",i,j);
                 c2_phi_Psi[i][j]->SaveAs(CanName.Data());
-                // CanName = Form("./figures_phi/c3_phi_Psi_pt_%d_Centrality_%d.pdf",i,j);
+                // CanName = Form("./figures_phi/c3_phi_Psi_ycm_%d_Centrality_%d.pdf",i,j);
                 // c3_phi_Psi[i][j]->SaveAs(CanName.Data());
-                CanName = Form("./figures_phi/c2_phi_Psi_pt_%d_Centrality_%d_bw.pdf",i,j);
+                CanName = Form("./figures_phi/c2_phi_Psi_ycm_%d_Centrality_%d_bw.pdf",i,j);
                 c2_phi_Psi_bw[i][j]->SaveAs(CanName.Data());
-                // CanName = Form("./figures_phi/c3_phi_Psi_pt_%d_Centrality_%d_bw.pdf",i,j);
+                // CanName = Form("./figures_phi/c3_phi_Psi_ycm_%d_Centrality_%d_bw.pdf",i,j);
                 // c3_phi_Psi_bw[i][j]->SaveAs(CanName.Data());
             }
         }
@@ -1900,7 +1928,7 @@ void get_phi_flow(const Int_t energy = 3)
     */
     TFile *file_counts = new TFile("flow/Counts.root","RECREATE");
     file_counts->cd();
-    for(Int_t i = 0; i < pt_total_New_phi; i++)
+    for(Int_t i = 0; i < ycm_total_New_phi; i++)
     {
         for(Int_t j = Centrality_start; j < Centrality_stop; j++) // centrality bin
         {
